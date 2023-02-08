@@ -18,7 +18,8 @@ WORKDIR /
 
 COPY --from=build /golang-gin /golang-gin
 
-EXPOSE 8080
+ENV PORT=8080
+EXPOSE ${PORT}
 
 USER nonroot:nonroot
 
