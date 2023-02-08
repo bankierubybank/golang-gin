@@ -2,8 +2,11 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+
+	"fmt"
 )
 
 // album represents data about a record album.
@@ -27,7 +30,7 @@ func main() {
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
 
-	router.Run(":8080")
+	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
 
 // getAlbums responds with the list of all albums as JSON.
