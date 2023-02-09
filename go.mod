@@ -2,7 +2,10 @@ module github.com/bankierubybank/golang-gin
 
 go 1.19
 
-require github.com/gin-gonic/gin v1.8.2
+require (
+	github.com/gin-gonic/gin v1.8.2
+	github.com/go-playground/assert/v2 v2.2.0
+)
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
