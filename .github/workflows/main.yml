@@ -7,7 +7,9 @@ on:
 
 jobs:
   build:
-    runs-on: debian-latest
+    # Change runner image from Debian to Ubuntu as GitHub-hosted runners doesn't have Debian 
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
+    runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
