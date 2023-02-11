@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,4 +27,18 @@ func TestGetAlbums(t *testing.T) {
 	json.Unmarshal(w.Body.Bytes(), &albums)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestDebug(t *testing.T) {
+	r := SetUpRouter()
+	r.GET("/debug", debug)
+	req, _ := http.NewRequest("GET", "/debug", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	var d debugInfo
+	json.Unmarshal(w.Body.Bytes(), &d)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	fmt.Println("W.BODY ", w.Body)
 }
