@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -29,6 +31,8 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
+
+	router.GET("/debug", debug)
 
 	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
@@ -67,4 +71,50 @@ func getAlbumByID(c *gin.Context) {
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
+type debugInfo struct {
+	Hostname  string `json:"hostname"`
+	UName     string `json:"uname"`
+	GoVersion string `json:"goversion"`
+	ClientIP  string `json:"clientip"`
+}
+
+func debug(c *gin.Context) {
+	d := new(debugInfo)
+	if c.ClientIP() != "" {
+		d.ClientIP = c.ClientIP()
+	} else {
+		d.ClientIP = ""
+	}
+	fmt.Println("IP: ", c.ClientIP())
+
+	hostname, hostnameErr := (exec.Command("hostname")).Output()
+	var h string = strings.TrimRight(string(hostname), "\n")
+	if hostnameErr != nil {
+		d.Hostname = ""
+	} else {
+		d.Hostname = h
+	}
+	fmt.Println("H: ", h)
+
+	uname, unameErr := (exec.Command("uname", "-a")).Output()
+	var u string = strings.TrimRight(string(uname), "\n")
+	if unameErr != nil {
+		d.UName = ""
+	} else {
+		d.UName = u
+	}
+	fmt.Println("U: ", u)
+
+	goversion, goversionErr := (exec.Command("go", "version")).Output()
+	var g string = strings.TrimRight(string(goversion), "\n")
+	if goversionErr != nil {
+		d.GoVersion = ""
+	} else {
+		d.GoVersion = g
+	}
+	fmt.Println("G: ", g)
+
+	c.IndentedJSON(http.StatusOK, d)
 }
