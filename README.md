@@ -24,12 +24,14 @@ docker build -t golang-gin:latest .
 docker run --name my-golang-gin -d -p 80:8080 golang-gin:latest
 ```
 
-### Landing Page
-```
-http://<host-ip>:8080/
-```
-
 ### API Routes
 ```
-http://<host-ip>/albums/
+http://<HOST-IP>:<PORT>/
 ```
+
+##### API Routes
+| Method | Route | Purpose |
+| ------ | ------ | ------ |
+| GET | /albums | List albums |
+| GET | /albums/{id} | Get an album by ID |
+| POST | /albums | Create an album from provided JSON |
