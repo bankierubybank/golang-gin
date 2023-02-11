@@ -12,7 +12,7 @@ COPY *.go ./
 RUN go build -o /golang-gin
 
 ## Deploy
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base-debian10:debug
 
 WORKDIR /
 
