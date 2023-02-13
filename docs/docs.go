@@ -49,6 +49,17 @@ const docTemplate = `{
                     "albums"
                 ],
                 "summary": "Create an album",
+                "parameters": [
+                    {
+                        "description": "JSON of album to create",
+                        "name": "album",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.album"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -104,6 +115,11 @@ const docTemplate = `{
                     }
                 }
             }
+        }
+    },
+    "definitions": {
+        "main.album": {
+            "type": "object"
         }
     }
 }`

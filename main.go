@@ -10,17 +10,18 @@ import (
 
 	"fmt"
 
-	docs "github.com/bankierubybank/golang-gin/docs"
+	"github.com/bankierubybank/golang-gin/docs"
+	_ "github.com/bankierubybank/golang-gin/docs"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // album represents data about a record album.
 type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+	ID     string  `json:"id" binding:"required" example:"string" maxLength:"15"`
+	Title  string  `json:"title" binding:"required" example:"string" maxLength:"255"`
+	Artist string  `json:"artist" binding:"required" example:"string" maxLength:"255"`
+	Price  float64 `json:"price" binding:"required" example:"float64" maxLength:"63"`
 }
 
 // albums slice to seed record album data.
@@ -40,12 +41,15 @@ func main() {
 
 	v1 := router.Group("/api/v1")
 	{
-		eg := v1.Group("/")
+		albums := v1.Group("/albums")
 		{
-			eg.GET("/albums", getAlbums)
-			eg.GET("/albums/:id", getAlbumByID)
-			eg.POST("/albums", postAlbums)
-			eg.GET("/debug", debug)
+			albums.GET("", getAlbums)
+			albums.GET(":id", getAlbumByID)
+			albums.POST("", postAlbums)
+		}
+		debugRouter := v1.Group("/debug")
+		{
+			debugRouter.GET("", debug)
 		}
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
@@ -72,6 +76,7 @@ func getAlbums(c *gin.Context) {
 // @Description	Create an album
 // @Tags		albums
 // @Accept		json
+// @Param		album	body	album	true	"JSON of album to create"
 // @Produce		json
 // @Success		200
 // @Router		/albums/ [post]
