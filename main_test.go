@@ -18,8 +18,8 @@ func SetUpRouter() *gin.Engine {
 
 func TestGetAlbums(t *testing.T) {
 	r := SetUpRouter()
-	r.GET("/albums", getAlbums)
-	req, _ := http.NewRequest("GET", "/albums", nil)
+	r.GET("/api/v1/albums", getAlbums)
+	req, _ := http.NewRequest("GET", "/api/v1/albums", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -31,8 +31,8 @@ func TestGetAlbums(t *testing.T) {
 
 func TestDebug(t *testing.T) {
 	r := SetUpRouter()
-	r.GET("/debug", debug)
-	req, _ := http.NewRequest("GET", "/debug", nil)
+	r.GET("/api/v1/debug", debug)
+	req, _ := http.NewRequest("GET", "/api/v1/debug", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
