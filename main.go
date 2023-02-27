@@ -1,11 +1,15 @@
 package main
 
 import (
+	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"fmt"
@@ -16,19 +20,20 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// album represents data about a record album.
-type album struct {
-	ID     string  `json:"id" binding:"required" example:"string" maxLength:"15"`
-	Title  string  `json:"title" binding:"required" example:"string" maxLength:"255"`
-	Artist string  `json:"artist" binding:"required" example:"string" maxLength:"255"`
-	Price  float64 `json:"price" binding:"required" example:"float64" maxLength:"63"`
+// user represents data about a record user.
+type user struct {
+	ID        string `json:"id" binding:"required" example:"string" maxLength:"15"`
+	Email     string `json:"email" binding:"required" example:"string" maxLength:"255"`
+	FirstName string `json:"firstname" binding:"required" example:"string" maxLength:"255"`
+	LastName  string `json:"lastname" binding:"required" example:"string" maxLength:"255"`
+	JobTitle  string `json:"jobtitle" binding:"required" example:"string" maxLength:"255"`
 }
 
-// albums slice to seed record album data.
-var albums = []album{
-	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
+// users slice to seed record user data.
+var users = []user{
+	{ID: "1", Email: "chatchai.w@netpoleons.com", FirstName: "Chatchai", LastName: "Wongdetsakul", JobTitle: "DevSecOps Engineer"},
+	{ID: "2", Email: "natchapong.b@netpoleons.com", FirstName: "Natchapong", LastName: "Buretes", JobTitle: "iSec and Network Engineer"},
+	{ID: "3", Email: "chananya.k@netpoleons.com", FirstName: "Chananya", LastName: "Krudnim", JobTitle: "iSec and Network Engineer"},
 }
 
 // @title			Swagger Example API
@@ -37,15 +42,33 @@ var albums = []album{
 func main() {
 	router := gin.Default()
 
+	// CORS for https://foo.com and https://github.com origins, allowing:
+	// - PUT and PATCH methods
+	// - Origin header
+	// - Credentials share
+	// - Preflight requests cached for 12 hours
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "PUT", "PATCH"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
 	v1 := router.Group("/api/v1")
 	{
-		albums := v1.Group("/albums")
+		users := v1.Group("/users")
 		{
-			albums.GET("", getAlbums)
-			albums.GET(":id", getAlbumByID)
-			albums.POST("", postAlbums)
+			users.GET("", getUsers)
+			users.GET(":id", getUserByID)
+			users.POST("", createUser)
+		}
+		random := v1.Group("/cat")
+		{
+			random.GET("/random", getRandomCat)
 		}
 		debugRouter := v1.Group("/debug")
 		{
@@ -58,63 +81,98 @@ func main() {
 }
 
 // @BasePath	/api/v1
-// @Summary		Get all albums
+// @Summary		Get all users
 // @Schemes
-// @Description	Get all albums
-// @Tags		albums
+// @Description	Get all users
+// @Tags		users
 // @Accept		json
 // @Produce		json
 // @Success		200
-// @Router		/albums/ [get]
-func getAlbums(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, albums)
+// @Router		/users/ [get]
+func getUsers(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, users)
 }
 
 // @BasePath	/api/v1
-// @Summary		Create an album
+// @Summary		Get an user by ID
 // @Schemes
-// @Description	Create an album
-// @Tags		albums
+// @Description	Get an user by ID
+// @Tags		users
 // @Accept		json
-// @Param		album	body	album	true	"JSON of album to create"
+// @Param		id	path	int	true	"User ID"
 // @Produce		json
 // @Success		200
-// @Router		/albums/ [post]
-func postAlbums(c *gin.Context) {
-	var newAlbum album
-
-	// Call BindJSON to bind the received JSON to newAlbum.
-	if err := c.BindJSON(&newAlbum); err != nil {
-		return
-	}
-
-	// Add the new album to the slice.
-	albums = append(albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, newAlbum)
-}
-
-// @BasePath	/api/v1
-// @Summary		Get an album by ID
-// @Schemes
-// @Description	Get an album by ID
-// @Tags		albums
-// @Accept		json
-// @Param		id	path	int	true	"Album ID"
-// @Produce		json
-// @Success		200
-// @Router		/albums/{id} [get]
-func getAlbumByID(c *gin.Context) {
+// @Router		/users/{id} [get]
+func getUserByID(c *gin.Context) {
 	id := c.Param("id")
 
 	// Loop over the list of albums, looking for
 	// an album whose ID value matches the parameter.
-	for _, a := range albums {
+	for _, a := range users {
 		if a.ID == id {
 			c.IndentedJSON(http.StatusOK, a)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
+}
+
+// @BasePath	/api/v1
+// @Summary		Create an user
+// @Schemes
+// @Description	Create an user
+// @Tags		users
+// @Accept		json
+// @Param		user	body	user	true	"JSON of user to create"
+// @Produce		json
+// @Success		200
+// @Router		/users/ [post]
+func createUser(c *gin.Context) {
+	var newUser user
+
+	// Call BindJSON to bind the received JSON to newAlbum.
+	if err := c.BindJSON(&newUser); err != nil {
+		return
+	}
+
+	// Add the new album to the slice.
+	users = append(users, newUser)
+	c.IndentedJSON(http.StatusCreated, newUser)
+}
+
+// @BasePath	/api/v1
+// @Summary		Get random cat
+// @Schemes
+// @Description	Get random cat
+// @Tags		cat
+// @Accept		json
+// @Produce		json
+// @Success		200
+// @Router		/cat/random [get]
+func getRandomCat(c *gin.Context) {
+	var code [5]int
+	code[0] = 200
+	code[1] = 200
+	code[2] = 403
+	code[3] = 404
+	code[4] = 503
+	min := 1
+	max := 5
+	var index = rand.Intn(max-min) + min
+	var get = "https://http.cat/" + string(code[index])
+	resp, err := http.Get(get)
+	if err != nil {
+		c.IndentedJSON(http.StatusServiceUnavailable, "")
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.IndentedJSON(http.StatusServiceUnavailable, "")
+	}
+
+	c.IndentedJSON(http.StatusOK, body)
 }
 
 type debugInfo struct {

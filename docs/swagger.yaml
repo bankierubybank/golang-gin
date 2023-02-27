@@ -1,5 +1,32 @@
 definitions:
-  main.album:
+  main.user:
+    properties:
+      email:
+        example: string
+        maxLength: 255
+        type: string
+      firstname:
+        example: string
+        maxLength: 255
+        type: string
+      id:
+        example: string
+        maxLength: 15
+        type: string
+      jobtitle:
+        example: string
+        maxLength: 255
+        type: string
+      lastname:
+        example: string
+        maxLength: 255
+        type: string
+    required:
+    - email
+    - firstname
+    - id
+    - jobtitle
+    - lastname
     type: object
 info:
   contact: {}
@@ -8,57 +35,19 @@ info:
   title: Swagger Example API
   version: v0.0.1
 paths:
-  /albums/:
+  /cat/random:
     get:
       consumes:
       - application/json
-      description: Get all albums
+      description: Get random cat
       produces:
       - application/json
       responses:
         "200":
           description: OK
-      summary: Get all albums
+      summary: Get random cat
       tags:
-      - albums
-    post:
-      consumes:
-      - application/json
-      description: Create an album
-      parameters:
-      - description: JSON of album to create
-        in: body
-        name: album
-        required: true
-        schema:
-          $ref: '#/definitions/main.album'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Create an album
-      tags:
-      - albums
-  /albums/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get an album by ID
-      parameters:
-      - description: Album ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Get an album by ID
-      tags:
-      - albums
+      - cat
   /debug:
     get:
       consumes:
@@ -72,4 +61,55 @@ paths:
       summary: Get debug information
       tags:
       - debug
+  /users/:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create an user
+      parameters:
+      - description: JSON of user to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.user'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create an user
+      tags:
+      - users
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get an user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get an user by ID
+      tags:
+      - users
 swagger: "2.0"

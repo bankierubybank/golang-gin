@@ -18,9 +18,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/albums/": {
+        "/cat/random": {
             "get": {
-                "description": "Get all albums",
+                "description": "Get random cat",
                 "consumes": [
                     "application/json"
                 ],
@@ -28,67 +28,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "albums"
+                    "cat"
                 ],
-                "summary": "Get all albums",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            },
-            "post": {
-                "description": "Create an album",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "albums"
-                ],
-                "summary": "Create an album",
-                "parameters": [
-                    {
-                        "description": "JSON of album to create",
-                        "name": "album",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/main.album"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/albums/{id}": {
-            "get": {
-                "description": "Get an album by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "albums"
-                ],
-                "summary": "Get an album by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Album ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Get random cat",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -115,11 +57,123 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/": {
+            "get": {
+                "description": "Get all users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create an user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create an user",
+                "parameters": [
+                    {
+                        "description": "JSON of user to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.user"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Get an user by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get an user by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "main.album": {
-            "type": "object"
+        "main.user": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstname",
+                "id",
+                "jobtitle",
+                "lastname"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "string"
+                },
+                "firstname": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "example": "string"
+                },
+                "jobtitle": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "string"
+                },
+                "lastname": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "string"
+                }
+            }
         }
     }
 }`
