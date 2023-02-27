@@ -1,11 +1,11 @@
 # My Golang Gin Sample API #
+[![CI](https://github.com/bankierubybank/golang-gin/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/bankierubybank/golang-gin/actions/workflows/main.yml)
+
 This project is for learning Golang (with Gin-gonic)
 - How to write sample API with Golang
 - How to Dockerize Golang application
 - How to CI using GitHub Actions
 - How to deploy Golang container on Docker and K8s/OpenShift
-
-[![CI](https://github.com/bankierubybank/golang-gin/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/bankierubybank/golang-gin/actions/workflows/main.yml)
 
 ##### Environment Variable
 | Variable name | Description | Default | Mandatory |
@@ -32,7 +32,7 @@ http://<HOST-IP>:<PORT>/swagger/index.html
 ##### API Routes
 | Method | Route | Purpose |
 | ------ | ------ | ------ |
-| GET | /api/v1/albums | List albums |
-| GET | /api/v1/albums/{id} | Get an album by ID |
-| POST | /api/v1/albums | Create an album from provided JSON |
+| GET | /api/v1/users | List users |
+| GET | /api/v1/users/{id} | Get an user by ID |
+| POST | /api/v1/users | Create an user from provided JSON |
 | GET | /api/v1/debug | Get debug information |
