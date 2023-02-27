@@ -9,14 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"fmt"
+
+	"github.com/bankierubybank/golang-gin/docs"
+	_ "github.com/bankierubybank/golang-gin/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // album represents data about a record album.
 type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+	ID     string  `json:"id" binding:"required" example:"string" maxLength:"15"`
+	Title  string  `json:"title" binding:"required" example:"string" maxLength:"255"`
+	Artist string  `json:"artist" binding:"required" example:"string" maxLength:"255"`
+	Price  float64 `json:"price" binding:"required" example:"float64" maxLength:"63"`
 }
 
 // albums slice to seed record album data.
@@ -26,28 +31,59 @@ var albums = []album{
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
+// @title			Swagger Example API
+// @version			v0.0.1
+// @license.name	Apache 2.0
 func main() {
 	router := gin.Default()
-	router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumByID)
-	router.POST("/albums", postAlbums)
 
-	router.GET("/debug", debug)
+	docs.SwaggerInfo.BasePath = "/api/v1"
+
+	v1 := router.Group("/api/v1")
+	{
+		albums := v1.Group("/albums")
+		{
+			albums.GET("", getAlbums)
+			albums.GET(":id", getAlbumByID)
+			albums.POST("", postAlbums)
+		}
+		debugRouter := v1.Group("/debug")
+		{
+			debugRouter.GET("", debug)
+		}
+	}
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
 
-// getAlbums responds with the list of all albums as JSON.
+// @BasePath	/api/v1
+// @Summary		Get all albums
+// @Schemes
+// @Description	Get all albums
+// @Tags		albums
+// @Accept		json
+// @Produce		json
+// @Success		200
+// @Router		/albums/ [get]
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
-// postAlbums adds an album from JSON received in the request body.
+// @BasePath	/api/v1
+// @Summary		Create an album
+// @Schemes
+// @Description	Create an album
+// @Tags		albums
+// @Accept		json
+// @Param		album	body	album	true	"JSON of album to create"
+// @Produce		json
+// @Success		200
+// @Router		/albums/ [post]
 func postAlbums(c *gin.Context) {
 	var newAlbum album
 
-	// Call BindJSON to bind the received JSON to
-	// newAlbum.
+	// Call BindJSON to bind the received JSON to newAlbum.
 	if err := c.BindJSON(&newAlbum); err != nil {
 		return
 	}
@@ -57,8 +93,16 @@ func postAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
-// getAlbumByID locates the album whose ID value matches the id
-// parameter sent by the client, then returns that album as a response.
+// @BasePath	/api/v1
+// @Summary		Get an album by ID
+// @Schemes
+// @Description	Get an album by ID
+// @Tags		albums
+// @Accept		json
+// @Param		id	path	int	true	"Album ID"
+// @Produce		json
+// @Success		200
+// @Router		/albums/{id} [get]
 func getAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 
@@ -80,6 +124,15 @@ type debugInfo struct {
 	ClientIP  string `json:"clientip"`
 }
 
+// @BasePath	/api/v1
+// @Summary		Get debug information
+// @Schemes
+// @Description	Get debug information
+// @Tags		debug
+// @Accept		json
+// @Produce		json
+// @Success		200
+// @Router		/debug [get]
 func debug(c *gin.Context) {
 	d := new(debugInfo)
 	if c.ClientIP() != "" {

@@ -18,9 +18,9 @@ WORKDIR /
 
 COPY --from=build /golang-gin /golang-gin
 
+USER nonroot:nonroot
+
 ENV PORT=8080
 EXPOSE ${PORT}
-
-USER nonroot:nonroot
 
 ENTRYPOINT ["/golang-gin"]

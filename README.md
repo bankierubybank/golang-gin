@@ -24,14 +24,15 @@ docker build -t golang-gin:latest .
 docker run --name my-golang-gin -d -p 80:8080 golang-gin:latest
 ```
 
-### API Routes
+### Swagger
 ```
-http://<HOST-IP>:<PORT>/
+http://<HOST-IP>:<PORT>/swagger/index.html
 ```
 
 ##### API Routes
 | Method | Route | Purpose |
 | ------ | ------ | ------ |
-| GET | /albums | List albums |
-| GET | /albums/{id} | Get an album by ID |
-| POST | /albums | Create an album from provided JSON |
+| GET | /api/v1/albums | List albums |
+| GET | /api/v1/albums/{id} | Get an album by ID |
+| POST | /api/v1/albums | Create an album from provided JSON |
+| GET | /api/v1/debug | Get debug information |
