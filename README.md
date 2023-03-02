@@ -1,10 +1,11 @@
 # My Golang Gin Sample API #
 [![CI](https://github.com/bankierubybank/golang-gin/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/bankierubybank/golang-gin/actions/workflows/main.yml)
+[![Build Status](https://dev.azure.com/nsth-devsecops/chatchai.w_golang-gin/_apis/build/status/bankierubybank.golang-gin?branchName=main)](https://dev.azure.com/nsth-devsecops/chatchai.w_golang-gin/_build/latest?definitionId=4&branchName=main)
 
 This project is for learning Golang (with Gin-gonic)
 - How to write sample API with Golang
 - How to Dockerize Golang application
-- How to CI using GitHub Actions
+- How to CI using GitHub Actions / Azure DevOps Pipeline
 - How to deploy Golang container on Docker and K8s/OpenShift
 
 ##### Environment Variable
