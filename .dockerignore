@@ -1,4 +1,6 @@
 README.md
 .gitignore
 .github/workflows/main.yml
+azure-pipelines.yml
 Jenkinsfile
+deployment/
