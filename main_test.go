@@ -16,15 +16,25 @@ func SetUpRouter() *gin.Engine {
 	return router
 }
 
-func TestGetAlbums(t *testing.T) {
+func TestGetUsers(t *testing.T) {
 	r := SetUpRouter()
-	r.GET("/api/v1/albums", getAlbums)
-	req, _ := http.NewRequest("GET", "/api/v1/albums", nil)
+	r.GET("/api/v1/users", getUsers)
+	req, _ := http.NewRequest("GET", "/api/v1/users", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	var albums []album
-	json.Unmarshal(w.Body.Bytes(), &albums)
+	var users []user
+	json.Unmarshal(w.Body.Bytes(), &users)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestGetRandomCat(t *testing.T) {
+	r := SetUpRouter()
+	r.GET("/api/v1/cat/random", getRandomCat)
+	req, _ := http.NewRequest("GET", "/api/v1/cat/random", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }

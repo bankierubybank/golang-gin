@@ -50,7 +50,6 @@ func main() {
 		{
 			users.GET("", getUsers)
 			users.GET(":id", getUserByID)
-			users.POST("", createUser)
 		}
 		random := v1.Group("/cat")
 		{
@@ -76,7 +75,11 @@ func main() {
 // @Success		200
 // @Router		/users/ [get]
 func getUsers(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, users)
+	var users, err = models.getUsers()
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
+	}
+	c.JSON(http.StatusOK, users)
 }
 
 // @BasePath	/api/v1
@@ -97,38 +100,6 @@ func getUserByID(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 	}
 	c.JSON(http.StatusOK, user)
-	// // Loop over the list of albums, looking for
-	// // an album whose ID value matches the parameter.
-	// for _, a := range users {
-	// 	if a.ID == id {
-	// 		c.IndentedJSON(http.StatusOK, a)
-	// 		return
-	// 	}
-	// }
-	// c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
-}
-
-// @BasePath	/api/v1
-// @Summary		Create an user
-// @Schemes
-// @Description	Create an user
-// @Tags		users
-// @Accept		json
-// @Param		user	body	models.userModel	true	"JSON of user to create"
-// @Produce		json
-// @Success		200
-// @Router		/users/ [post]
-func createUser(c *gin.Context) {
-	var newUser user
-
-	// Call BindJSON to bind the received JSON to newAlbum.
-	if err := c.BindJSON(&newUser); err != nil {
-		return
-	}
-
-	// Add the new album to the slice.
-	users = append(users, newUser)
-	c.IndentedJSON(http.StatusCreated, newUser)
 }
 
 // @BasePath	/api/v1

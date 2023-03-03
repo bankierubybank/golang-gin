@@ -19,6 +19,10 @@ var users = []userModel{
 	{ID: "3", Email: "chananya.k@netpoleons.com", FirstName: "Chananya", LastName: "Krudnim", JobTitle: "iSec and Network Engineer"},
 }
 
+func getUsers() (userModel, error) (userModel, error) {
+	return users, nil
+}
+
 func getUserByID(id string) (userModel, error) {
 	// Loop over the list of users, looking for
 	// an user whose ID value matches the parameter.
@@ -29,5 +33,5 @@ func getUserByID(id string) (userModel, error) {
 			return user, nil
 		}
 	}
-	return user, errors.New("empty name")
+	return user, errors.New("User not found")
 }
