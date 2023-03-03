@@ -20,26 +20,12 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// user represents data about a record user.
-type user struct {
-	ID        string `json:"id" binding:"required" example:"string" maxLength:"15"`
-	Email     string `json:"email" binding:"required" example:"string" maxLength:"255"`
-	FirstName string `json:"firstname" binding:"required" example:"string" maxLength:"255"`
-	LastName  string `json:"lastname" binding:"required" example:"string" maxLength:"255"`
-	JobTitle  string `json:"jobtitle" binding:"required" example:"string" maxLength:"255"`
-}
-
-// users slice to seed record user data.
-var users = []user{
-	{ID: "1", Email: "chatchai.w@netpoleons.com", FirstName: "Chatchai", LastName: "Wongdetsakul", JobTitle: "DevSecOps Engineer"},
-	{ID: "2", Email: "natchapong.b@netpoleons.com", FirstName: "Natchapong", LastName: "Buretes", JobTitle: "iSec and Network Engineer"},
-	{ID: "3", Email: "chananya.k@netpoleons.com", FirstName: "Chananya", LastName: "Krudnim", JobTitle: "iSec and Network Engineer"},
-}
-
 // @title			Swagger Example API
 // @version			v0.0.1
 // @license.name	Apache 2.0
 func main() {
+	// setup mock data for api
+
 	router := gin.Default()
 
 	// CORS for https://foo.com and https://github.com origins, allowing:
@@ -106,15 +92,20 @@ func getUsers(c *gin.Context) {
 func getUserByID(c *gin.Context) {
 	id := c.Param("id")
 
-	// Loop over the list of albums, looking for
-	// an album whose ID value matches the parameter.
-	for _, a := range users {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
-			return
-		}
+	var user, err = models.getUserByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
+	c.JSON(http.StatusOK, user)
+	// // Loop over the list of albums, looking for
+	// // an album whose ID value matches the parameter.
+	// for _, a := range users {
+	// 	if a.ID == id {
+	// 		c.IndentedJSON(http.StatusOK, a)
+	// 		return
+	// 	}
+	// }
+	// c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
 }
 
 // @BasePath	/api/v1
@@ -123,7 +114,7 @@ func getUserByID(c *gin.Context) {
 // @Description	Create an user
 // @Tags		users
 // @Accept		json
-// @Param		user	body	user	true	"JSON of user to create"
+// @Param		user	body	models.userModel	true	"JSON of user to create"
 // @Produce		json
 // @Success		200
 // @Router		/users/ [post]
@@ -159,7 +150,7 @@ func getRandomCat(c *gin.Context) {
 	min := 1
 	max := 5
 	var index = rand.Intn(max-min) + min
-	var get = "https://http.cat/" + string(code[index])
+	var get = "https://http.cat/" + string(rune(code[index]))
 	resp, err := http.Get(get)
 	if err != nil {
 		c.IndentedJSON(http.StatusServiceUnavailable, "")
