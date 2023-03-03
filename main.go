@@ -14,6 +14,8 @@ import (
 
 	"fmt"
 
+	"github.com/bankierubybank/golang-gin/models"
+
 	"github.com/bankierubybank/golang-gin/docs"
 	_ "github.com/bankierubybank/golang-gin/docs"
 	swaggerfiles "github.com/swaggo/files"
@@ -48,8 +50,8 @@ func main() {
 	{
 		users := v1.Group("/users")
 		{
-			users.GET("", getUsers)
-			users.GET(":id", getUserByID)
+			users.GET("", get_users)
+			users.GET(":id", get_user_id)
 		}
 		random := v1.Group("/cat")
 		{
@@ -74,8 +76,8 @@ func main() {
 // @Produce		json
 // @Success		200
 // @Router		/users/ [get]
-func getUsers(c *gin.Context) {
-	var us, err = user.getUsers()
+func get_users(c *gin.Context) {
+	us, err := models.getUsers()
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
 	}
@@ -92,10 +94,10 @@ func getUsers(c *gin.Context) {
 // @Produce		json
 // @Success		200
 // @Router		/users/{id} [get]
-func getUserByID(c *gin.Context) {
+func get_user_id(c *gin.Context) {
 	id := c.Param("id")
 
-	var u, err = user.getUserByID(id)
+	u, err := models.getUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 	}
