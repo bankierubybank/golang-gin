@@ -1,4 +1,4 @@
-package models
+package main
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ var users = []userModel{
 	{ID: "3", Email: "chananya.k@netpoleons.com", FirstName: "Chananya", LastName: "Krudnim", JobTitle: "iSec and Network Engineer"},
 }
 
-func getUsers() (userModel, error) (userModel, error) {
+func getUsers(userModel, error) ([]userModel, error) {
 	return users, nil
 }
 

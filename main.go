@@ -75,11 +75,11 @@ func main() {
 // @Success		200
 // @Router		/users/ [get]
 func getUsers(c *gin.Context) {
-	var users, err = models.getUsers()
+	var us, err = user.getUsers()
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, us)
 }
 
 // @BasePath	/api/v1
@@ -95,11 +95,11 @@ func getUsers(c *gin.Context) {
 func getUserByID(c *gin.Context) {
 	id := c.Param("id")
 
-	var user, err = models.getUserByID(id)
+	var u, err = user.getUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, u)
 }
 
 // @BasePath	/api/v1
