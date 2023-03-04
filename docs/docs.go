@@ -76,35 +76,6 @@ const docTemplate = `{
                         "description": "OK"
                     }
                 }
-            },
-            "post": {
-                "description": "Create an user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Create an user",
-                "parameters": [
-                    {
-                        "description": "JSON of user to create",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.userModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
             }
         },
         "/users/{id}": {
@@ -133,45 +104,6 @@ const docTemplate = `{
                     "200": {
                         "description": "OK"
                     }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "models.userModel": {
-            "type": "object",
-            "required": [
-                "email",
-                "firstname",
-                "id",
-                "jobtitle",
-                "lastname"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "example": "string"
-                },
-                "firstname": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "example": "string"
-                },
-                "id": {
-                    "type": "string",
-                    "maxLength": 15,
-                    "example": "string"
-                },
-                "jobtitle": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "example": "string"
-                },
-                "lastname": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "example": "string"
                 }
             }
         }

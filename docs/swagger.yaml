@@ -1,33 +1,3 @@
-definitions:
-  models.userModel:
-    properties:
-      email:
-        example: string
-        maxLength: 255
-        type: string
-      firstname:
-        example: string
-        maxLength: 255
-        type: string
-      id:
-        example: string
-        maxLength: 15
-        type: string
-      jobtitle:
-        example: string
-        maxLength: 255
-        type: string
-      lastname:
-        example: string
-        maxLength: 255
-        type: string
-    required:
-    - email
-    - firstname
-    - id
-    - jobtitle
-    - lastname
-    type: object
 info:
   contact: {}
   license:
@@ -72,25 +42,6 @@ paths:
         "200":
           description: OK
       summary: Get all users
-      tags:
-      - users
-    post:
-      consumes:
-      - application/json
-      description: Create an user
-      parameters:
-      - description: JSON of user to create
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.userModel'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Create an user
       tags:
       - users
   /users/{id}:

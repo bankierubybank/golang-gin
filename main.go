@@ -16,6 +16,7 @@ import (
 
 	"github.com/bankierubybank/golang-gin/docs"
 	_ "github.com/bankierubybank/golang-gin/docs"
+	"github.com/bankierubybank/golang-gin/model"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -75,7 +76,7 @@ func main() {
 // @Success		200
 // @Router		/users/ [get]
 func get_users(c *gin.Context) {
-	us, err := model.getUsers()
+	us, err := model.GetUsers()
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
 	}
@@ -87,15 +88,15 @@ func get_users(c *gin.Context) {
 // @Schemes
 // @Description	Get an user by ID
 // @Tags		users
-// @Accept		jsogn
+// @Accept		json
 // @Param		id	path	int	true	"User ID"
 // @Produce		json
 // @Success		200
-// @Router		/users/{id} [get]
+// @Router		/users/{id} [get]s
 func get_user_id(c *gin.Context) {
 	id := c.Param("id")
 
-	u, err := model.getUserByID(id)
+	u, err := model.GetUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 	}
@@ -141,7 +142,6 @@ type debugInfo struct {
 	Hostname  string `json:"hostname"`
 	UName     string `json:"uname"`
 	GoVersion string `json:"goversion"`
-	ClientIP  string `json:"clientip"`
 }
 
 // @BasePath	/api/v1
@@ -155,12 +155,6 @@ type debugInfo struct {
 // @Router		/debug [get]
 func debug(c *gin.Context) {
 	d := new(debugInfo)
-	if c.ClientIP() != "" {
-		d.ClientIP = c.ClientIP()
-	} else {
-		d.ClientIP = ""
-	}
-	fmt.Println("IP: ", c.ClientIP())
 
 	hostname, hostnameErr := (exec.Command("hostname")).Output()
 	var h string = strings.TrimRight(string(hostname), "\n")
@@ -169,7 +163,6 @@ func debug(c *gin.Context) {
 	} else {
 		d.Hostname = h
 	}
-	fmt.Println("H: ", h)
 
 	uname, unameErr := (exec.Command("uname", "-a")).Output()
 	var u string = strings.TrimRight(string(uname), "\n")
@@ -178,7 +171,6 @@ func debug(c *gin.Context) {
 	} else {
 		d.UName = u
 	}
-	fmt.Println("U: ", u)
 
 	goversion, goversionErr := (exec.Command("go", "version")).Output()
 	var g string = strings.TrimRight(string(goversion), "\n")
@@ -187,7 +179,6 @@ func debug(c *gin.Context) {
 	} else {
 		d.GoVersion = g
 	}
-	fmt.Println("G: ", g)
 
 	c.IndentedJSON(http.StatusOK, d)
 }
