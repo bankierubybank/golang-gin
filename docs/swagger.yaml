@@ -1,53 +1,10 @@
-definitions:
-  main.user:
-    properties:
-      email:
-        example: string
-        maxLength: 255
-        type: string
-      firstname:
-        example: string
-        maxLength: 255
-        type: string
-      id:
-        example: string
-        maxLength: 15
-        type: string
-      jobtitle:
-        example: string
-        maxLength: 255
-        type: string
-      lastname:
-        example: string
-        maxLength: 255
-        type: string
-    required:
-    - email
-    - firstname
-    - id
-    - jobtitle
-    - lastname
-    type: object
 info:
   contact: {}
   license:
     name: Apache 2.0
-  title: Swagger Example API
-  version: v0.0.1
+  title: Golang Gin-Gonic Swagger Example API
+  version: v0.0.2
 paths:
-  /cat/random:
-    get:
-      consumes:
-      - application/json
-      description: Get random cat
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Get random cat
-      tags:
-      - cat
   /debug:
     get:
       consumes:
@@ -72,25 +29,6 @@ paths:
         "200":
           description: OK
       summary: Get all users
-      tags:
-      - users
-    post:
-      consumes:
-      - application/json
-      description: Create an user
-      parameters:
-      - description: JSON of user to create
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/main.user'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Create an user
       tags:
       - users
   /users/{id}:
