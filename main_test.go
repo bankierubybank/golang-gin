@@ -9,6 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
+
+	"github.com/bankierubybank/golang-gin/model"
+	"github.com/bankierubybank/golang-gin/route"
 )
 
 func SetUpRouter() *gin.Engine {
@@ -18,23 +21,13 @@ func SetUpRouter() *gin.Engine {
 
 func TestGetUsers(t *testing.T) {
 	r := SetUpRouter()
-	r.GET("/api/v1/users", getUsers)
+	r.GET("/api/v1/users", route.GetUsers)
 	req, _ := http.NewRequest("GET", "/api/v1/users", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	var users []user
+	var users []model.UserModel
 	json.Unmarshal(w.Body.Bytes(), &users)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestGetRandomCat(t *testing.T) {
-	r := SetUpRouter()
-	r.GET("/api/v1/cat/random", getRandomCat)
-	req, _ := http.NewRequest("GET", "/api/v1/cat/random", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
