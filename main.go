@@ -1,8 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
-	"math/rand"
+	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
@@ -12,25 +11,21 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"fmt"
-
-	"github.com/bankierubybank/golang-gin/docs"
-	_ "github.com/bankierubybank/golang-gin/docs"
-	"github.com/bankierubybank/golang-gin/model"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"github.com/bankierubybank/golang-gin/docs"
+	"github.com/bankierubybank/golang-gin/route"
 )
 
-// @title			Swagger Example API
-// @version			v0.0.1
+// @title			Golang Gin-Gonic Swagger Example API
+// @version			v0.0.2
 // @license.name	Apache 2.0
 func main() {
-	// setup mock data for api
-
 	router := gin.Default()
 
-	// CORS for https://foo.com and https://github.com origins, allowing:
-	// - PUT and PATCH methods
+	// CORS for http://localhost:5173 origin, allowing:
+	// - GET, PUT, and PATCH methods
 	// - Origin header
 	// - Credentials share
 	// - Preflight requests cached for 12 hours
@@ -47,15 +42,7 @@ func main() {
 
 	v1 := router.Group("/api/v1")
 	{
-		users := v1.Group("/users")
-		{
-			users.GET("", get_users)
-			users.GET(":id", get_user_id)
-		}
-		random := v1.Group("/cat")
-		{
-			random.GET("/random", getRandomCat)
-		}
+		route.Users(v1.Group("/users"))
 		debugRouter := v1.Group("/debug")
 		{
 			debugRouter.GET("", debug)
@@ -64,78 +51,6 @@ func main() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
-}
-
-// @BasePath	/api/v1
-// @Summary		Get all users
-// @Schemes
-// @Description	Get all users
-// @Tags		users
-// @Accept		json
-// @Produce		json
-// @Success		200
-// @Router		/users/ [get]
-func get_users(c *gin.Context) {
-	us, err := model.GetUsers()
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
-	}
-	c.JSON(http.StatusOK, us)
-}
-
-// @BasePath	/api/v1
-// @Summary		Get an user by ID
-// @Schemes
-// @Description	Get an user by ID
-// @Tags		users
-// @Accept		json
-// @Param		id	path	int	true	"User ID"
-// @Produce		json
-// @Success		200
-// @Router		/users/{id} [get]s
-func get_user_id(c *gin.Context) {
-	id := c.Param("id")
-
-	u, err := model.GetUserByID(id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
-	}
-	c.JSON(http.StatusOK, u)
-}
-
-// @BasePath	/api/v1
-// @Summary		Get random cat
-// @Schemes
-// @Description	Get random cat
-// @Tags		cat
-// @Accept		json
-// @Produce		json
-// @Success		200
-// @Router		/cat/random [get]
-func getRandomCat(c *gin.Context) {
-	var code [5]int
-	code[0] = 200
-	code[1] = 200
-	code[2] = 403
-	code[3] = 404
-	code[4] = 503
-	min := 1
-	max := 5
-	var index = rand.Intn(max-min) + min
-	var get = "https://http.cat/" + string(rune(code[index]))
-	resp, err := http.Get(get)
-	if err != nil {
-		c.IndentedJSON(http.StatusServiceUnavailable, "")
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		c.IndentedJSON(http.StatusServiceUnavailable, "")
-	}
-
-	c.IndentedJSON(http.StatusOK, body)
 }
 
 type debugInfo struct {

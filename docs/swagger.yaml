@@ -2,22 +2,9 @@ info:
   contact: {}
   license:
     name: Apache 2.0
-  title: Swagger Example API
-  version: v0.0.1
+  title: Golang Gin-Gonic Swagger Example API
+  version: v0.0.2
 paths:
-  /cat/random:
-    get:
-      consumes:
-      - application/json
-      description: Get random cat
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Get random cat
-      tags:
-      - cat
   /debug:
     get:
       consumes:
