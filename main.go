@@ -14,8 +14,6 @@ import (
 
 	"fmt"
 
-	"github.com/bankierubybank/golang-gin/models"
-
 	"github.com/bankierubybank/golang-gin/docs"
 	_ "github.com/bankierubybank/golang-gin/docs"
 	swaggerfiles "github.com/swaggo/files"
@@ -77,7 +75,7 @@ func main() {
 // @Success		200
 // @Router		/users/ [get]
 func get_users(c *gin.Context) {
-	us, err := models.getUsers()
+	us, err := model.getUsers()
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
 	}
@@ -89,7 +87,7 @@ func get_users(c *gin.Context) {
 // @Schemes
 // @Description	Get an user by ID
 // @Tags		users
-// @Accept		json
+// @Accept		jsogn
 // @Param		id	path	int	true	"User ID"
 // @Produce		json
 // @Success		200
@@ -97,7 +95,7 @@ func get_users(c *gin.Context) {
 func get_user_id(c *gin.Context) {
 	id := c.Param("id")
 
-	u, err := models.getUserByID(id)
+	u, err := model.getUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 	}

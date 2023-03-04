@@ -1,5 +1,5 @@
 definitions:
-  main.user:
+  models.userModel:
     properties:
       email:
         example: string
@@ -84,7 +84,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/main.user'
+          $ref: '#/definitions/models.userModel'
       produces:
       - application/json
       responses:

@@ -96,7 +96,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.user"
+                            "$ref": "#/definitions/models.userModel"
                         }
                     }
                 ],
@@ -138,7 +138,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "main.user": {
+        "models.userModel": {
             "type": "object",
             "required": [
                 "email",
