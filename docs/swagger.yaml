@@ -1,8 +1,6 @@
 info:
   contact: {}
-  license:
-    name: Apache 2.0
-  title: Golang Gin-Gonic Swagger Example API
+  title: Golang Gin-Gonic Example API
   version: v0.0.2
 paths:
   /debug:

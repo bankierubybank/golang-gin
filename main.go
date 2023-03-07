@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -18,9 +19,8 @@ import (
 	"github.com/bankierubybank/golang-gin/route"
 )
 
-// @title			Golang Gin-Gonic Swagger Example API
+// @title			Golang Gin-Gonic Example API
 // @version			v0.0.2
-// @license.name	Apache 2.0
 func main() {
 	router := gin.Default()
 
@@ -45,7 +45,7 @@ func main() {
 		route.Users(v1.Group("/users"))
 		debugRouter := v1.Group("/debug")
 		{
-			debugRouter.GET("", debug)
+			debugRouter.GET("", GetDebug)
 		}
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
@@ -54,9 +54,20 @@ func main() {
 }
 
 type debugInfo struct {
-	Hostname  string `json:"hostname"`
-	UName     string `json:"uname"`
-	GoVersion string `json:"goversion"`
+	RuntimeInfo runtimeInfo `json:"runtimeInfo"`
+	BuildInfo   buildInfo   `json:"buildInfo"`
+}
+
+type runtimeInfo struct {
+	Hostname         string `json:"hostname"`
+	UName            string `json:"uname"`
+	GoRuntimeVersion string `json:"goruntimeversion"`
+}
+type buildInfo struct {
+	GoBuildVersion string `json:"gobuildversion"`
+	VCS            string `json:"vcs"`
+	Commit         string `json:"commit"`
+	CommitURL      string `json:"commiturl"`
 }
 
 // @BasePath	/api/v1
@@ -68,32 +79,36 @@ type debugInfo struct {
 // @Produce		json
 // @Success		200
 // @Router		/debug [get]
-func debug(c *gin.Context) {
+func GetDebug(c *gin.Context) {
 	d := new(debugInfo)
 
 	hostname, hostnameErr := (exec.Command("hostname")).Output()
-	var h string = strings.TrimRight(string(hostname), "\n")
-	if hostnameErr != nil {
-		d.Hostname = ""
-	} else {
-		d.Hostname = h
+	if hostnameErr == nil {
+		d.RuntimeInfo.Hostname = strings.TrimRight(string(hostname), "\n")
 	}
 
 	uname, unameErr := (exec.Command("uname", "-a")).Output()
-	var u string = strings.TrimRight(string(uname), "\n")
-	if unameErr != nil {
-		d.UName = ""
-	} else {
-		d.UName = u
+	if unameErr == nil {
+		d.RuntimeInfo.UName = strings.TrimRight(string(uname), "\n")
 	}
 
-	goversion, goversionErr := (exec.Command("go", "version")).Output()
-	var g string = strings.TrimRight(string(goversion), "\n")
-	if goversionErr != nil {
-		d.GoVersion = ""
-	} else {
-		d.GoVersion = g
+	goruntimeversion, goruntimeversionErr := (exec.Command("go", "version")).Output()
+	if goruntimeversionErr == nil {
+		d.RuntimeInfo.GoRuntimeVersion = strings.TrimRight(string(goruntimeversion), "\n")
 	}
 
-	c.IndentedJSON(http.StatusOK, d)
+	if info, ok := debug.ReadBuildInfo(); ok {
+		d.BuildInfo.GoBuildVersion = info.GoVersion
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs" {
+				d.BuildInfo.VCS = setting.Value
+			}
+			if setting.Key == "vcs.revision" {
+				d.BuildInfo.Commit = setting.Value
+				d.BuildInfo.CommitURL = "https://github.com/bankierubybank/golang-gin/commit/" + setting.Value
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, d)
 }
