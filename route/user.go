@@ -8,8 +8,8 @@ import (
 )
 
 func Users(g *gin.RouterGroup) {
-	g.GET("", get_users)
-	g.GET(":id", get_user_id)
+	g.GET("", GetUsers)
+	g.GET(":id", GetUserByID)
 }
 
 // @BasePath	/api/v1
@@ -21,7 +21,7 @@ func Users(g *gin.RouterGroup) {
 // @Produce		json
 // @Success		200
 // @Router		/users/ [get]
-func get_users(c *gin.Context) {
+func GetUsers(c *gin.Context) {
 	us, err := model.GetUsers()
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
@@ -39,7 +39,7 @@ func get_users(c *gin.Context) {
 // @Produce		json
 // @Success		200
 // @Router		/users/{id} [get]s
-func get_user_id(c *gin.Context) {
+func GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 
 	u, err := model.GetUserByID(id)

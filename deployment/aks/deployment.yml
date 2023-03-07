@@ -17,8 +17,8 @@ spec:
         image: nsthdso.azurecr.io/golang-gin:latest
         resources:
           limits:
-            memory: "128Mi"
-            cpu: "500m"
+            memory: "64Mi"
+            cpu: "250m"
         ports:
         - containerPort: 8080
           protocol: TCP
