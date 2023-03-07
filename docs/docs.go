@@ -10,9 +10,6 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {},
-        "license": {
-            "name": "Apache 2.0"
-        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -96,7 +93,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Golang Gin-Gonic Swagger Example API",
+	Title:            "Golang Gin-Gonic Example API",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
