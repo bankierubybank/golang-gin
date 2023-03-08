@@ -22,8 +22,8 @@ spec:
         env:
           - name: node
             valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
+              fieldRef:
+                fieldPath: spec.nodeName
           - name: namespace
             valueFrom:
               fieldRef:
