@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-golang-gin
+  namespace: web-team-dev
+spec:
+  selector:
+    matchLabels:
+      app: demo-golang-gin
+  template:
+    metadata:
+      labels:
+        app: demo-golang-gin
+    spec:
+      containers:
+      - name: demo-golang-gin
+        image: bankierubybank/golang-gin:latest
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8080
+          protocol: TCP

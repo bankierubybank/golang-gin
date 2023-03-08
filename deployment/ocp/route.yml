@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: demo-golang-gin
+  namespace: web-team-dev
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: demo-golang-gin-svc
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
