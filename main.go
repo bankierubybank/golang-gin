@@ -62,6 +62,8 @@ type runtimeInfo struct {
 	Hostname         string `json:"hostname"`
 	UName            string `json:"uname"`
 	GoRuntimeVersion string `json:"goruntimeversion"`
+	K8Snode          string `json:"k8snode"`
+	K8Snamespace     string `json:"k8snamespace"`
 }
 type buildInfo struct {
 	GoBuildVersion string `json:"gobuildversion"`
@@ -96,6 +98,9 @@ func GetDebug(c *gin.Context) {
 	if goruntimeversionErr == nil {
 		d.RuntimeInfo.GoRuntimeVersion = strings.TrimRight(string(goruntimeversion), "\n")
 	}
+
+	d.RuntimeInfo.K8Snode = os.Getenv("node")
+	d.RuntimeInfo.K8Snamespace = os.Getenv("namespace")
 
 	if info, ok := debug.ReadBuildInfo(); ok {
 		d.BuildInfo.GoBuildVersion = info.GoVersion

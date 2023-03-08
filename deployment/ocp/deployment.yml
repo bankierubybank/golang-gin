@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: demo-golang-gin
-  namespace: nsthdso
+  namespace: web-team-dev
 spec:
   selector:
     matchLabels:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: demo-golang-gin
-        image: nsthdso.azurecr.io/golang-gin:latest
+        image: bankierubybank/golang-gin:latest
         resources:
           limits:
             memory: "64Mi"
