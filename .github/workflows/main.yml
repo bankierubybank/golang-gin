@@ -5,43 +5,54 @@ on:
   push:
     branches:
       - "main"
+  pull_request:
+    branches:
+      - master
 
 jobs:
   sca:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
 
-    - name: Set up Go 1.x in order to write go.list file
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.19
-    - name: WriteGoList
-      run: go list -json -m all > go.list
+      - name: Set up Go 1.x in order to write go.list file
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.19
+      - name: WriteGoList
+        run: go list -json -m all > go.list
 
-    - name: Nancy
-      uses: sonatype-nexus-community/nancy-github-action@main
+      - name: Nancy
+        uses: sonatype-nexus-community/nancy-github-action@main
+
+  sast:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: off
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: '-no-fail ./...'
 
   build:
-    # Change runner image from Debian to Ubuntu as GitHub-hosted runners doesn't have Debian 
+    # Change runner image from Debian to Ubuntu as GitHub-hosted runners doesn't have Debian
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
-      -
-        name: Login to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
