@@ -6,7 +6,7 @@ This project is for learning Golang (with Gin-gonic)
 - How to write sample API with Golang
 - How to Dockerize Golang application
 - How to CI using GitHub Actions / Azure DevOps Pipeline
-- How to deploy Golang container on Docker and K8s/OpenShift
+- How to deploy Golang container on Docker and K8s/OpenShift (On-premise and Cloud)
 
 ##### Environment Variable
 | Variable name | Description | Default | Mandatory |
@@ -37,3 +37,4 @@ http://<HOST-IP>:<PORT>/swagger/index.html
 | GET | /api/v1/users/{id} | Get an user by ID |
 | POST | /api/v1/users | Create an user from provided JSON |
 | GET | /api/v1/debug | Get debug information |
+| GET | /api/v1/debug/execute/{cmd} | Execute command and return result |

