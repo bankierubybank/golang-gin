@@ -15,6 +15,7 @@ spec:
       containers:
       - name: demo-golang-gin
         image: bankierubybank/golang-gin:latest
+        imagePullPolicy: Always
         resources:
           limits:
             memory: "64Mi"
@@ -22,8 +23,8 @@ spec:
         env:
           - name: node
             valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
+              fieldRef:
+                fieldPath: spec.nodeName
           - name: namespace
             valueFrom:
               fieldRef:

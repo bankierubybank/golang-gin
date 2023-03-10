@@ -84,10 +84,7 @@ type buildInfo struct {
 func GetDebug(c *gin.Context) {
 	d := new(debugInfo)
 
-	hostname, hostnameErr := (exec.Command("hostname")).Output()
-	if hostnameErr == nil {
-		d.RuntimeInfo.Hostname = strings.TrimRight(string(hostname), "\n")
-	}
+	d.RuntimeInfo.Hostname = os.Getenv("HOSTNAME")
 
 	uname, unameErr := (exec.Command("uname", "-a")).Output()
 	if unameErr == nil {
