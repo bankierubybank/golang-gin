@@ -16,6 +16,25 @@ paths:
       summary: Get debug information
       tags:
       - debug
+  /debug/execute/{cmd}:
+    get:
+      consumes:
+      - application/json
+      description: Execute command and return result
+      parameters:
+      - description: Command to execute
+        in: path
+        name: cmd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Execute command and return result
+      tags:
+      - debug
   /users/:
     get:
       consumes:

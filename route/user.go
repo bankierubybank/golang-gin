@@ -38,7 +38,7 @@ func GetUsers(c *gin.Context) {
 // @Param		id	path	int	true	"User ID"
 // @Produce		json
 // @Success		200
-// @Router		/users/{id} [get]s
+// @Router		/users/{id} [get]
 func GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 

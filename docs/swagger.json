@@ -26,6 +26,35 @@
                 }
             }
         },
+        "/debug/execute/{cmd}": {
+            "get": {
+                "description": "Execute command and return result",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "debug"
+                ],
+                "summary": "Execute command and return result",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Command to execute",
+                        "name": "cmd",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/users/": {
             "get": {
                 "description": "Get all users",
