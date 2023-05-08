@@ -17,12 +17,12 @@ stages:
         - Agent.Type -equals Linux # equals check for Agent.Type Linux; NOTE - This is user-defined capability
       # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
     jobs:
-      - job: CPSpectral
-        steps:
-          - script: curl -L 'https://spectral-us.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN)' | sh
-            displayName: "Install Spectral"
-          - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN)  --include-tags base,audit3,iac
-            displayName: "Spectral Scan"
+      # - job: CPSpectral
+      #   steps:
+      #     - script: curl -L 'https://spectral-us.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN)' | sh
+      #       displayName: "Install Spectral"
+      #     - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN)  --include-tags base,audit3,iac
+      #       displayName: "Spectral Scan"
       - job: FortifySAST
         steps:
           - task: FortifyScanCentralSAST@7
@@ -33,24 +33,24 @@ stages:
               sscCiToken: '$(ScanCentral.SscCiToken)'
               uploadToSSC: false
               buildTool: 'none'
-      - job: AquaScan
-        container:
-          image: aquasec/aqua-scanner
-          env:
-            AQUA_KEY: $(AQUA_KEY)
-            AQUA_SECRET: $(AQUA_SECRET)
-            TRIVY_RUN_AS_PLUGIN: aqua
-        steps:
-          - script: |
-              trivy fs --security-checks config,vuln,secret --sast .
-      - job: BuildAndPush
-        steps:
-          - task: Docker@2
-            inputs:
-              containerRegistry: "nsthdso.azurecr.io"
-              repository: "golang-gin"
-              command: "buildAndPush"
-              Dockerfile: "**/Dockerfile"
+      # - job: AquaScan
+      #   container:
+      #     image: aquasec/aqua-scanner
+      #     env:
+      #       AQUA_KEY: $(AQUA_KEY)
+      #       AQUA_SECRET: $(AQUA_SECRET)
+      #       TRIVY_RUN_AS_PLUGIN: aqua
+      #   steps:
+      #     - script: |
+      #         trivy fs --security-checks config,vuln,secret --sast .
+      # - job: BuildAndPush
+      #   steps:
+      #     - task: Docker@2
+      #       inputs:
+      #         containerRegistry: "nsthdso.azurecr.io"
+      #         repository: "golang-gin"
+      #         command: "buildAndPush"
+      #         Dockerfile: "**/Dockerfile"
   # - stage: CD
   #   pool:
   #     # Use self-hosted agent to run pipeline
