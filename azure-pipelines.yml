@@ -51,27 +51,27 @@ stages:
               repository: "golang-gin"
               command: "buildAndPush"
               Dockerfile: "**/Dockerfile"
-  - stage: CD
-    pool:
-      # Use self-hosted agent to run pipeline
-      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
-      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
-      name: "Azure-DO-Self-Hosted"
-      demands:
-        - Agent.Type -equals Linux # equals check for Agent.Type Linux; NOTE - This is user-defined capability
-      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
-    jobs:
-      - job: Deploy
-        steps:
-          # Use deployment (YAML) files to deploy a deployment of built Docker image to AKS
-          # Ref: https://learn.microsoft.com/en-us/azure/aks/devops-pipeline?view=azure-devops&pivots=pipelines-yaml
-          - task: KubernetesManifest@0
-            inputs:
-              action: "deploy"
-              kubernetesServiceConnection: "dev-aks_nsthdso"
-              namespace: "nsthdso"
-              manifests: |
-                deployment/aks/deployment.yml
-                deployment/aks/service.yml
-              containers: "nsthdso.azurecr.io/golang-gin:$(Build.BuildId)"
-              imagePullSecrets: "nsthdso.azurecr.io"
+  # - stage: CD
+  #   pool:
+  #     # Use self-hosted agent to run pipeline
+  #     # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
+  #     # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
+  #     name: "Azure-DO-Self-Hosted"
+  #     demands:
+  #       - Agent.Type -equals Linux # equals check for Agent.Type Linux; NOTE - This is user-defined capability
+  #     # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
+  #   jobs:
+  #     - job: Deploy
+  #       steps:
+  #         # Use deployment (YAML) files to deploy a deployment of built Docker image to AKS
+  #         # Ref: https://learn.microsoft.com/en-us/azure/aks/devops-pipeline?view=azure-devops&pivots=pipelines-yaml
+  #         - task: KubernetesManifest@0
+  #           inputs:
+  #             action: "deploy"
+  #             kubernetesServiceConnection: "dev-aks_nsthdso"
+  #             namespace: "nsthdso"
+  #             manifests: |
+  #               deployment/aks/deployment.yml
+  #               deployment/aks/service.yml
+  #             containers: "nsthdso.azurecr.io/golang-gin:$(Build.BuildId)"
+  #             imagePullSecrets: "nsthdso.azurecr.io"
