@@ -23,6 +23,16 @@ stages:
             displayName: "Install Spectral"
           - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN)  --include-tags base,audit3,iac
             displayName: "Spectral Scan"
+      - job: FortifySAST
+        steps:
+          - task: FortifyScanCentralSAST@7
+            inputs:
+              scanCentralCtrlUrl: 'https://ssc.nsth.net/scancentral-ctrl'
+              scanCentralClientToken: '$(ScanCentral.ClientToken)'
+              sscUrl: 'https://ssc.nsth.net/ssc'
+              sscCiToken: '$(ScanCentral.SscCiToken)'
+              uploadToSSC: false
+              buildTool: 'none'
       - job: AquaScan
         container:
           image: aquasec/aqua-scanner
