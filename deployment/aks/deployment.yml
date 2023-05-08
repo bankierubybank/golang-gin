@@ -12,6 +12,7 @@ spec:
       labels:
         app: demo-golang-gin
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: demo-golang-gin
         image: nsthdso.azurecr.io/golang-gin:latest
