@@ -31,7 +31,9 @@ stages:
               scanCentralClientToken: '$(ScanCentral.ClientToken)'
               sscUrl: 'https://ssc.nsth.net/ssc'
               sscCiToken: '$(ScanCentral.SscCiToken)'
-              uploadToSSC: false
+              uploadToSSC: true
+              applicationName: 'golang-gin'
+              applicationVersion: 'v0.0.1'
               buildTool: 'none'
       # - job: AquaScan
       #   container:
