@@ -68,7 +68,7 @@ stages:
               scaDebug: true
               fortifyScanType: 'LocalScan'
               runFortifyUpload: true
-              fortifyServerName: 'ssc-scancentralctrl'
+              fortifyServerName: 'ssc-CI'
               fortifyApplicationIdentifierType: 'byId'
               fortifyApplicationVersionId: '10019'
   - stage: CI
