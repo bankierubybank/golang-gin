@@ -8,14 +8,10 @@ trigger:
 
 stages:
   - stage: SAST
-    pool:
-      # Use self-hosted agent to run pipeline
-      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
-      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
-      name: "Azure-DO-Self-Hosted"
-      demands:
-        - Agent.OS -equals Windows_NT # equals check for Agent.Type Linux; NOTE - This is user-defined capability
-      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
+    pool: 
+      # Use Microsoft-hosted agent to run pipeline
+      # https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#use-a-microsoft-hosted-agent
+      vmImage: 'windows-latest'
     jobs:
       - job: Setup
         steps:
