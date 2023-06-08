@@ -63,13 +63,14 @@ stages:
             inputs:
               applicationType: 'other'
               fortifyBuildId: 'golang-gin'
+              runFortifyRulepackUpdate: true
               scaVerbose: true
               scaDebug: true
               fortifyScanType: 'LocalScan'
               runFortifyUpload: true
               fortifyServerName: 'ssc-scancentralctrl'
-              fortifyApplicationName: 'golang-gin'
-              fortifyApplicationVersion: 'v0.0.1'
+              fortifyApplicationIdentifierType: 'byId'
+              fortifyApplicationVersionId: '10019'
   - stage: CI
     pool:
       # Use self-hosted agent to run pipeline
