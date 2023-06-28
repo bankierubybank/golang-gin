@@ -5,26 +5,44 @@ on:
   push:
     branches:
       - "main"
+      - "dev"
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
-  sca:
+  # sca:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out code into the Go module directory
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Go 1.x in order to write go.list file
+  #       uses: actions/setup-go@v2
+  #       with:
+  #         go-version: ^1.19
+  #     - name: WriteGoList
+  #       run: go list -json -m all > go.list
+
+  #     - name: Nancy
+  #       uses: sonatype-nexus-community/nancy-github-action@main
+
+  chain_bench_scan_example:
     runs-on: ubuntu-latest
+    name: Test Job
     steps:
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
-
-      - name: Set up Go 1.x in order to write go.list file
-        uses: actions/setup-go@v2
+      - name: Chain Bench
+        id: chain-bench
+        uses: aquasecurity/chain-bench-action@v1.1.1
         with:
-          go-version: ^1.19
-      - name: WriteGoList
-        run: go list -json -m all > go.list
+          # repository-url: ${{ github.server_url }}/${{ github.repository }} # Compiles to https://github.com/aquasecurity/chain-bench-action
+          repository-url: https://github.com/bankierubybank/golang-gin
+          github-token: ${{ secrets.GOLANGGIN_GHPAT }}
+          scm-platform: github # Optional parameter for dedicated SCM servers
 
-      - name: Nancy
-        uses: sonatype-nexus-community/nancy-github-action@main
+      # Using the github action output from the scan step "chain-bench-result" (JSON so you can run rego/jq against it)
+      - name: Echo
+        run: echo ${{ steps.chain-bench.outputs.chain-bench-result }}
 
   sast:
     runs-on: ubuntu-latest

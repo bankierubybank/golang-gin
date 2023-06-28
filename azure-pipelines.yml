@@ -8,10 +8,14 @@ trigger:
 
 stages:
   - stage: SAST
-    pool: 
-      # Use Microsoft-hosted agent to run pipeline
-      # https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#use-a-microsoft-hosted-agent
-      vmImage: 'windows-latest'
+    pool:
+      # Use self-hosted agent to run pipeline
+      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
+      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
+      name: "Azure-DO-Self-Hosted"
+      demands:
+        - Agent.OS -equals Windows_NT # equals check for Agent.Type Linux; NOTE - This is user-defined capability
+      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
     jobs:
       - job: Setup
         steps:
@@ -19,12 +23,16 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
+                Write-Host "Removing existing agent folders"
+                if (Test-Path c:\_agent_distr\) {
+                    Remove-Item -Path c:\_agent_distr\ -Recurse -Force
+                }
                 Write-Host "Downloading SCA from SSC"
                 $BaseUrl = "https://ssc.nsth.net/ssc/downloads"
                 New-Item -ItemType directory -Path c:\_agent_distr
-                $url = "$BaseUrl/Fortify_SCA_and_Apps_22.1.0_windows_x64.exe"
+                $url = "$BaseUrl/Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
                 Write-Host $url
-                $output = "c:\_agent_distr\Fortify_SCA_and_Apps_22.1.0_windows_x64.exe"
+                $output = "c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
                 $wc = New-Object System.Net.WebClient
                 $wc.DownloadFile($url, $output)
                 
@@ -38,7 +46,7 @@ stages:
             enabled: true
           - task: InstallFortifySCA@7
             inputs:
-              InstallerPath: 'c:\_agent_distr\Fortify_SCA_and_Apps_22.1.0_windows_x64.exe'
+              InstallerPath: 'c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe'
               VS2015: false
               VS2022: true
               LicenseFile: 'c:\_agent_distr\fortify.license'
@@ -55,13 +63,14 @@ stages:
             inputs:
               applicationType: 'other'
               fortifyBuildId: 'golang-gin'
+              runFortifyRulepackUpdate: true
               scaVerbose: true
               scaDebug: true
               fortifyScanType: 'LocalScan'
               runFortifyUpload: true
-              fortifyServerName: 'ssc-scancentralctrl'
-              fortifyApplicationName: 'golang-gin'
-              fortifyApplicationVersion: 'v0.0.1'
+              fortifyServerName: 'ssc-CI'
+              fortifyApplicationIdentifierType: 'byId'
+              fortifyApplicationVersionId: '10019'
   - stage: CI
     pool:
       # Use self-hosted agent to run pipeline
