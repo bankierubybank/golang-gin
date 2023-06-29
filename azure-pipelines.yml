@@ -69,8 +69,8 @@ stages:
               fortifyScanType: 'LocalScan'
               runFortifyUpload: true
               fortifyServerName: 'ssc-CI'
-              fortifyApplicationIdentifierType: 'byId'
-              fortifyApplicationVersionId: '10019'
+              fortifyApplicationName: 'golang-gin'
+              fortifyApplicationVersion: 'v0.0.2'
   - stage: CI
     pool:
       # Use self-hosted agent to run pipeline
