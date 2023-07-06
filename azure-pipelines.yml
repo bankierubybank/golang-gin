@@ -7,126 +7,71 @@ trigger:
   - main
 
 stages:
-  - stage: SAST
-    pool:
-      # Use self-hosted agent to run pipeline
-      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
-      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
-      name: "Azure-DO-Self-Hosted"
-      demands:
-        - Agent.OS -equals Windows_NT # equals check for Agent.Type Linux; NOTE - This is user-defined capability
-      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
-    jobs:
-      - job: Setup
-        steps:
-          - task: PowerShell@2
-            inputs:
-              targetType: 'inline'
-              script: |
-                Write-Host "Removing existing agent folders"
-                if (Test-Path c:\_agent_distr\) {
-                    Remove-Item -Path c:\_agent_distr\ -Recurse -Force
-                }
-                Write-Host "Downloading SCA from SSC"
-                $BaseUrl = "https://ssc.nsth.net/ssc/downloads"
-                New-Item -ItemType directory -Path c:\_agent_distr
-                $url = "$BaseUrl/Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
-                Write-Host $url
-                $output = "c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
-                $wc = New-Object System.Net.WebClient
-                $wc.DownloadFile($url, $output)
+  # - stage: SAST
+  #   pool:
+  #     # Use self-hosted agent to run pipeline
+  #     # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
+  #     # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
+  #     name: "Azure-DO-Self-Hosted"
+  #     demands:
+  #       - Agent.OS -equals Windows_NT # equals check for Agent.Type Linux; NOTE - This is user-defined capability
+  #     # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
+  #   jobs:
+  #     - job: Setup
+  #       steps:
+  #         - task: PowerShell@2
+  #           inputs:
+  #             targetType: 'inline'
+  #             script: |
+  #               Write-Host "Removing existing agent folders"
+  #               if (Test-Path c:\_agent_distr\) {
+  #                   Remove-Item -Path c:\_agent_distr\ -Recurse -Force
+  #               }
+  #               Write-Host "Downloading SCA from SSC"
+  #               $BaseUrl = "https://ssc.nsth.net/ssc/downloads"
+  #               New-Item -ItemType directory -Path c:\_agent_distr
+  #               $url = "$BaseUrl/Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
+  #               Write-Host $url
+  #               $output = "c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
+  #               $wc = New-Object System.Net.WebClient
+  #               $wc.DownloadFile($url, $output)
                 
-                Write-Host "Downloading fortify.license from SSC"
-                $url = "$BaseUrl/fortify.license"
-                $output = "c:\_agent_distr\fortify.license"
-                Write-Host $url
-                $wc = New-Object System.Net.WebClient
-                $wc.DownloadFile($url, $output)
-                Write-Host "===Downloading Completed==="
-            enabled: true
-          - task: InstallFortifySCA@7
-            inputs:
-              InstallerPath: 'c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe'
-              VS2015: false
-              VS2022: true
-              LicenseFile: 'c:\_agent_distr\fortify.license'
-              RunFortifyRulepackUpdate: true
-          - task: PowerShell@2
-            inputs:
-              targetType: 'inline'
-              script: |
-                Write-Host "Post SCA Install Script"
-                Write-Host "##vso[task.prependpath]C:\Fortify\bin\"
-                Write-Host "##vso[task.prependpath]C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
-            enabled: true
-          - task: FortifySCA@7
-            inputs:
-              applicationType: 'other'
-              fortifyBuildId: 'golang-gin'
-              runFortifyRulepackUpdate: true
-              scaVerbose: true
-              scaDebug: true
-              fortifyScanType: 'LocalScan'
-              runFortifyUpload: true
-              fortifyServerName: 'ssc-CI'
-              fortifyApplicationName: 'golang-gin'
-              fortifyApplicationVersion: 'v0.0.2'
-  - stage: CI
-    pool:
-      # Use self-hosted agent to run pipeline
-      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
-      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
-      name: "Azure-DO-Self-Hosted"
-      demands:
-        - Agent.Type -equals Linux # equals check for Agent.Type Linux; NOTE - This is user-defined capability
-      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
-    jobs:
-      - job: CPSpectral
-        steps:
-          - script: curl -L 'https://spectral-us.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN)' | sh
-            displayName: "Install Spectral"
-          - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN)  --include-tags base,audit3,iac
-            displayName: "Spectral Scan"
-      # - job: FortifySAST
-      #   steps:
-      #     - task: FortifyScanCentralSAST@7
-      #       inputs:
-      #         scanCentralCtrlUrl: 'https://ssc.nsth.net/scancentral-ctrl'
-      #         scanCentralClientToken: '$(ScanCentral.ClientToken)'
-      #         sscUrl: 'https://ssc.nsth.net/ssc'
-      #         sscCiToken: '$(ScanCentral.SscCiToken)'
-      #         uploadToSSC: true
-      #         applicationName: 'golang-gin'
-      #         applicationVersion: 'v0.0.1'
-      #         buildTool: 'none'
-      - job: SonatypeSCA
-        steps:
-          - task: NexusIqPipelineTask@1
-            inputs:
-              nexusIqService: 'nexusiq.nsth.net'
-              organizationId: '3f1d4277e5b14df28fe4c79b6e5854a2'
-              applicationId: 'golang-gin'
-              stage: 'Build'
-              scanTargets: '**/go.sum'
-      - job: AquaScan
-        container:
-          image: aquasec/aqua-scanner
-          env:
-            AQUA_KEY: $(AQUA_KEY)
-            AQUA_SECRET: $(AQUA_SECRET)
-            TRIVY_RUN_AS_PLUGIN: aqua
-        steps:
-          - script: |
-              trivy fs --security-checks config,vuln,secret --sast .
-      - job: BuildAndPush
-        steps:
-          - task: Docker@2
-            inputs:
-              containerRegistry: "nsthdso.azurecr.io"
-              repository: "golang-gin"
-              command: "buildAndPush"
-              Dockerfile: "**/Dockerfile"
-  # - stage: CD
+  #               Write-Host "Downloading fortify.license from SSC"
+  #               $url = "$BaseUrl/fortify.license"
+  #               $output = "c:\_agent_distr\fortify.license"
+  #               Write-Host $url
+  #               $wc = New-Object System.Net.WebClient
+  #               $wc.DownloadFile($url, $output)
+  #               Write-Host "===Downloading Completed==="
+  #           enabled: true
+  #         - task: InstallFortifySCA@7
+  #           inputs:
+  #             InstallerPath: 'c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe'
+  #             VS2015: false
+  #             VS2022: true
+  #             LicenseFile: 'c:\_agent_distr\fortify.license'
+  #             RunFortifyRulepackUpdate: true
+  #         - task: PowerShell@2
+  #           inputs:
+  #             targetType: 'inline'
+  #             script: |
+  #               Write-Host "Post SCA Install Script"
+  #               Write-Host "##vso[task.prependpath]C:\Fortify\bin\"
+  #               Write-Host "##vso[task.prependpath]C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
+  #           enabled: true
+  #         - task: FortifySCA@7
+  #           inputs:
+  #             applicationType: 'other'
+  #             fortifyBuildId: 'golang-gin'
+  #             runFortifyRulepackUpdate: true
+  #             scaVerbose: true
+  #             scaDebug: true
+  #             fortifyScanType: 'LocalScan'
+  #             runFortifyUpload: true
+  #             fortifyServerName: 'ssc-CI'
+  #             fortifyApplicationName: 'golang-gin'
+  #             fortifyApplicationVersion: 'v0.0.2'
+  # - stage: CI
   #   pool:
   #     # Use self-hosted agent to run pipeline
   #     # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
@@ -136,17 +81,70 @@ stages:
   #       - Agent.Type -equals Linux # equals check for Agent.Type Linux; NOTE - This is user-defined capability
   #     # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
   #   jobs:
-  #     - job: Deploy
+  #     - job: CPSpectral
   #       steps:
-  #         # Use deployment (YAML) files to deploy a deployment of built Docker image to AKS
-  #         # Ref: https://learn.microsoft.com/en-us/azure/aks/devops-pipeline?view=azure-devops&pivots=pipelines-yaml
-  #         - task: KubernetesManifest@0
+  #         - script: curl -L 'https://spectral-us.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN)' | sh
+  #           displayName: "Install Spectral"
+  #         - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN)  --include-tags base,audit3,iac
+  #           displayName: "Spectral Scan"
+  #     # - job: FortifySAST
+  #     #   steps:
+  #     #     - task: FortifyScanCentralSAST@7
+  #     #       inputs:
+  #     #         scanCentralCtrlUrl: 'https://ssc.nsth.net/scancentral-ctrl'
+  #     #         scanCentralClientToken: '$(ScanCentral.ClientToken)'
+  #     #         sscUrl: 'https://ssc.nsth.net/ssc'
+  #     #         sscCiToken: '$(ScanCentral.SscCiToken)'
+  #     #         uploadToSSC: true
+  #     #         applicationName: 'golang-gin'
+  #     #         applicationVersion: 'v0.0.1'
+  #     #         buildTool: 'none'
+  #     - job: SonatypeSCA
+  #       steps:
+  #         - task: NexusIqPipelineTask@1
   #           inputs:
-  #             action: "deploy"
-  #             kubernetesServiceConnection: "dev-aks_nsthdso"
-  #             namespace: "nsthdso"
-  #             manifests: |
-  #               deployment/aks/deployment.yml
-  #               deployment/aks/service.yml
-  #             containers: "nsthdso.azurecr.io/golang-gin:$(Build.BuildId)"
-  #             imagePullSecrets: "nsthdso.azurecr.io"
+  #             nexusIqService: 'nexusiq.nsth.net'
+  #             organizationId: '3f1d4277e5b14df28fe4c79b6e5854a2'
+  #             applicationId: 'golang-gin'
+  #             stage: 'Build'
+  #             scanTargets: '**/go.sum'
+  #     - job: AquaScan
+  #       container:
+  #         image: aquasec/aqua-scanner
+  #         env:
+  #           AQUA_KEY: $(AQUA_KEY)
+  #           AQUA_SECRET: $(AQUA_SECRET)
+  #           TRIVY_RUN_AS_PLUGIN: aqua
+  #       steps:
+  #         - script: |
+  #             trivy fs --security-checks config,vuln,secret --sast .
+  #     - job: BuildAndPush
+  #       steps:
+  #         - task: Docker@2
+  #           inputs:
+  #             containerRegistry: "nsthdso.azurecr.io"
+  #             repository: "golang-gin"
+  #             command: "buildAndPush"
+  #             Dockerfile: "**/Dockerfile"
+  - stage: CD
+    pool:
+      # Use self-hosted agent to run pipeline
+      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
+      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
+      name: "Azure-DO-Self-Hosted"
+      demands:
+        - Agent.Type -equals Linux # equals check for Agent.Type Linux; NOTE - This is user-defined capability
+      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
+    jobs:
+      - job: Deploy
+        steps:
+          - task: KubernetesManifest@1
+            inputs:
+              action: 'deploy'
+              connectionType: 'kubernetesServiceConnection'
+              kubernetesServiceConnection: 'prod-01.ocp.nsth.demo'
+              namespace: 'web-team-dev'
+              manifests: |
+                deployment/ocp/deployment.yml
+                deployment/ocp/service.yml
+                deployment/ocp/route.yml
