@@ -145,6 +145,6 @@ stages:
               kubernetesServiceConnection: 'prod-01.ocp.nsth.demo'
               namespace: 'web-team-dev'
               manifests: |
-                'deployment/ocp/deployment.yml'
-                'deployment/ocp/service.yml'
-                'deployment/ocp/route.yml'
+                deployment/ocp/deployment.yml
+                deployment/ocp/service.yml
+                deployment/ocp/route.yml
