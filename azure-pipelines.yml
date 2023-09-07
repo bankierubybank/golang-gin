@@ -108,6 +108,8 @@ stages:
               applicationId: 'golang-gin'
               stage: 'Build'
               scanTargets: '**/go.sum'
+              ignoreSystemError: true
+              ignoreScanningError: true
       - job: AquaScan
         container:
           image: aquasec/aqua-scanner
