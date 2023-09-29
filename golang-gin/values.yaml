@@ -40,8 +40,12 @@ service:
   type: ClusterIP
   port: 8080
 
+openshift_route:
+  #Enable if required openshift route
+  create: true
+
 ingress:
-  enabled: true
+  enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
