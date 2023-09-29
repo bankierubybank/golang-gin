@@ -38,6 +38,8 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	router.GET("/", base)
+
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
 	v1 := router.Group("/api/v1")
@@ -71,6 +73,10 @@ type buildInfo struct {
 	VCS            string `json:"vcs"`
 	Commit         string `json:"commit"`
 	CommitURL      string `json:"commiturl"`
+}
+
+func base(c *gin.Context) {
+	c.String(http.StatusOK, "OK")
 }
 
 // @BasePath	/api/v1
