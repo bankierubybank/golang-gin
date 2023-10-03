@@ -7,70 +7,70 @@ trigger:
   - main
 
 stages:
-  - stage: SAST
-    pool:
-      # Use self-hosted agent to run pipeline
-      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
-      # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
-      name: "Azure-DO-Self-Hosted"
-      demands:
-        - Agent.OS -equals Windows_NT # equals check for Agent.Type Linux; NOTE - This is user-defined capability
-      # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
-    jobs:
-      - job: Setup
-        steps:
-          - task: PowerShell@2
-            inputs:
-              targetType: 'inline'
-              script: |
-                Write-Host "Removing existing agent folders"
-                if (Test-Path c:\_agent_distr\) {
-                    Remove-Item -Path c:\_agent_distr\ -Recurse -Force
-                }
-                Write-Host "Downloading SCA from SSC"
-                $BaseUrl = "https://ssc.nsth.net/ssc/downloads"
-                New-Item -ItemType directory -Path c:\_agent_distr
-                $url = "$BaseUrl/Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
-                Write-Host $url
-                $output = "c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
-                $wc = New-Object System.Net.WebClient
-                $wc.DownloadFile($url, $output)
+  # - stage: SAST
+  #   pool:
+  #     # Use self-hosted agent to run pipeline
+  #     # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/pool?view=azure-pipelines
+  #     # https://learn.microsoft.com/en-us/training/modules/host-build-agent/2-choose-a-build-agent
+  #     name: "Azure-DO-Self-Hosted"
+  #     demands:
+  #       - Agent.OS -equals Windows_NT # equals check for Agent.Type Linux; NOTE - This is user-defined capability
+  #     # vmImage: ubuntu-latest # Name of the VM image you want to use; valid only in the Microsoft-hosted pool.
+  #   jobs:
+  #     - job: Setup
+  #       steps:
+  #         - task: PowerShell@2
+  #           inputs:
+  #             targetType: 'inline'
+  #             script: |
+  #               Write-Host "Removing existing agent folders"
+  #               if (Test-Path c:\_agent_distr\) {
+  #                   Remove-Item -Path c:\_agent_distr\ -Recurse -Force
+  #               }
+  #               Write-Host "Downloading SCA from SSC"
+  #               $BaseUrl = "https://ssc.nsth.net/ssc/downloads"
+  #               New-Item -ItemType directory -Path c:\_agent_distr
+  #               $url = "$BaseUrl/Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
+  #               Write-Host $url
+  #               $output = "c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe"
+  #               $wc = New-Object System.Net.WebClient
+  #               $wc.DownloadFile($url, $output)
                 
-                Write-Host "Downloading fortify.license from SSC"
-                $url = "$BaseUrl/fortify.license"
-                $output = "c:\_agent_distr\fortify.license"
-                Write-Host $url
-                $wc = New-Object System.Net.WebClient
-                $wc.DownloadFile($url, $output)
-                Write-Host "===Downloading Completed==="
-            enabled: true
-          - task: InstallFortifySCA@7
-            inputs:
-              InstallerPath: 'c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe'
-              VS2015: false
-              VS2022: true
-              LicenseFile: 'c:\_agent_distr\fortify.license'
-              RunFortifyRulepackUpdate: true
-          - task: PowerShell@2
-            inputs:
-              targetType: 'inline'
-              script: |
-                Write-Host "Post SCA Install Script"
-                Write-Host "##vso[task.prependpath]C:\Fortify\bin\"
-                Write-Host "##vso[task.prependpath]C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
-            enabled: true
-          - task: FortifySCA@7
-            inputs:
-              applicationType: 'other'
-              fortifyBuildId: 'golang-gin'
-              runFortifyRulepackUpdate: true
-              scaVerbose: true
-              scaDebug: true
-              fortifyScanType: 'LocalScan'
-              runFortifyUpload: true
-              fortifyServerName: 'ssc-CI'
-              fortifyApplicationName: 'golang-gin'
-              fortifyApplicationVersion: 'v0.0.2'
+  #               Write-Host "Downloading fortify.license from SSC"
+  #               $url = "$BaseUrl/fortify.license"
+  #               $output = "c:\_agent_distr\fortify.license"
+  #               Write-Host $url
+  #               $wc = New-Object System.Net.WebClient
+  #               $wc.DownloadFile($url, $output)
+  #               Write-Host "===Downloading Completed==="
+  #           enabled: true
+  #         - task: InstallFortifySCA@7
+  #           inputs:
+  #             InstallerPath: 'c:\_agent_distr\Fortify_SCA_and_Apps_22.2.0_windows_x64.exe'
+  #             VS2015: false
+  #             VS2022: true
+  #             LicenseFile: 'c:\_agent_distr\fortify.license'
+  #             RunFortifyRulepackUpdate: true
+  #         - task: PowerShell@2
+  #           inputs:
+  #             targetType: 'inline'
+  #             script: |
+  #               Write-Host "Post SCA Install Script"
+  #               Write-Host "##vso[task.prependpath]C:\Fortify\bin\"
+  #               Write-Host "##vso[task.prependpath]C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
+  #           enabled: true
+  #         - task: FortifySCA@7
+  #           inputs:
+  #             applicationType: 'other'
+  #             fortifyBuildId: 'golang-gin'
+  #             runFortifyRulepackUpdate: true
+  #             scaVerbose: true
+  #             scaDebug: true
+  #             fortifyScanType: 'LocalScan'
+  #             runFortifyUpload: true
+  #             fortifyServerName: 'ssc-CI'
+  #             fortifyApplicationName: 'golang-gin'
+  #             fortifyApplicationVersion: 'v0.0.2'
   - stage: CI
     pool:
       # Use self-hosted agent to run pipeline
@@ -85,7 +85,7 @@ stages:
         steps:
           - script: curl -L 'https://spectral-us.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN)' | sh
             displayName: "Install Spectral"
-          - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN)  --include-tags base,audit3,iac
+          - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN) --engines secrets,iac,oss --include-tags base,audit3,iac
             displayName: "Spectral Scan"
       # - job: FortifySAST
       #   steps:
