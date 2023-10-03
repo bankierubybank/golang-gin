@@ -84,7 +84,7 @@ stages:
     jobs:
       - job: CPSpectral
         steps:
-          - script: curl -L 'https://spectral-us.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN_NEW)' | sh
+          - script: curl -L 'https://spectral-eu.checkpoint.com/latest/x/sh?dsn=$(SPECTRAL_DSN_NEW)' | sh
             displayName: "Install Spectral"
           - script: $HOME/.spectral/spectral scan --ok --dsn $(SPECTRAL_DSN_NEW) --engines secrets,iac,oss --include-tags base,audit3,iac
             displayName: "Spectral Scan"
